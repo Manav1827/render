@@ -173,10 +173,15 @@ async def get_question_audio(session_id: str, question_index: int):
     audio_path = os.path.join(AUDIO_DIR, audio_filename)
     
     # Generate audio if not exists
+    # if not os.path.exists(audio_path):
+    #     tts = gTTS(text=question, lang="en")
+    #     tts.save(audio_path)
     if not os.path.exists(audio_path):
-        tts = gTTS(text=question, lang="en")
-        tts.save(audio_path)
-    
+        try:
+            tts = gTTS(text=question, lang="en")
+            tts.save(audio_path)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Text-to-speech failed: {str(e)}")   
     return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_filename)
 
 @app.post("/submit-answer/{session_id}/{question_index}")
