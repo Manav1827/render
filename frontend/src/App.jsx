@@ -414,6 +414,30 @@ function App() {
   };
 
   // Play Question Audio
+  // const playQuestion = async () => {
+  //   if (!sessionId) return;
+
+  //   setIsPlaying(true);
+  //   setError('');
+
+  //   try {
+  //     const response = await fetch(`${API_BASE}/question/${sessionId}/${currentQuestion}`);
+  //     if (!response.ok) throw new Error('Failed to get question audio');
+
+  //     const audioBlob = await response.blob();
+  //     const audioUrl = URL.createObjectURL(audioBlob);
+
+  //     if (audioPlayerRef.current) {
+  //       audioPlayerRef.current.src = audioUrl;
+  //       audioPlayerRef.current.onended = () => setIsPlaying(false);
+  //       await audioPlayerRef.current.play();
+  //     }
+  //   } catch (err) {
+  //     setError(err.message);
+  //     setIsPlaying(false);
+  //   }
+  // };
+// Play Question Audio
   const playQuestion = async () => {
     if (!sessionId) return;
 
@@ -421,8 +445,21 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE}/question/${sessionId}/${currentQuestion}`);
-      if (!response.ok) throw new Error('Failed to get question audio');
+      const response = await fetch(
+        `${API_BASE}/question/${sessionId}/${currentQuestion}`,
+        {
+          method: "GET",
+          headers: {
+            "Accept": "audio/mpeg",
+          },
+          cache: "no-store", // prevent stale audio caching
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to get question audio");
+      }
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
