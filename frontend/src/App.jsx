@@ -362,7 +362,8 @@
 import React, { useState, useRef } from 'react';
 import './App.css';
 
-const API_BASE = 'http://localhost:8000';
+// const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://render-xrji.onrender.com';
 
 function App() {
   const [step, setStep] = useState('upload'); // upload, interview, result
