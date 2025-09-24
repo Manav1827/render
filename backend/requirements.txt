@@ -1,0 +1,11 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+PyMuPDF==1.24.9
+pytesseract==0.3.13
+Pillow==10.4.0
+numpy==1.26.4
+soundfile==0.12.1
+gTTS==2.5.3
+pydantic==2.9.2
+google-generativeai==0.8.3
+python-multipart==0.0.9
