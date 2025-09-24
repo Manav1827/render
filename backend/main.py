@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import tempfile
 import shutil
+import pyttsx3
 
 app = FastAPI(title="AI Interview API")
 
@@ -158,6 +159,31 @@ async def upload_resume(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error processing resume: {str(e)}")
 
 @app.get("/question/{session_id}/{question_index}")
+# async def get_question_audio(session_id: str, question_index: int):
+#     """Get question audio file"""
+#     if session_id not in sessions:
+#         raise HTTPException(status_code=404, detail="Session not found")
+    
+#     session_data = sessions[session_id]["data"]
+    
+#     if question_index >= len(session_data.questions):
+#         raise HTTPException(status_code=400, detail="Invalid question index")
+    
+#     question = session_data.questions[question_index]
+#     audio_filename = f"question_{session_id}_{question_index}.mp3"
+#     audio_path = os.path.join(AUDIO_DIR, audio_filename)
+    
+#     # Generate audio if not exists
+#     # if not os.path.exists(audio_path):
+#     #     tts = gTTS(text=question, lang="en")
+#     #     tts.save(audio_path)
+#     if not os.path.exists(audio_path):
+#         try:
+#             tts = gTTS(text=question, lang="en")
+#             tts.save(audio_path)
+#         except Exception as e:
+#             raise HTTPException(status_code=500, detail=f"Text-to-speech failed: {str(e)}")   
+#     return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_filename)
 async def get_question_audio(session_id: str, question_index: int):
     """Get question audio file"""
     if session_id not in sessions:
@@ -173,17 +199,17 @@ async def get_question_audio(session_id: str, question_index: int):
     audio_path = os.path.join(AUDIO_DIR, audio_filename)
     
     # Generate audio if not exists
-    # if not os.path.exists(audio_path):
-    #     tts = gTTS(text=question, lang="en")
-    #     tts.save(audio_path)
     if not os.path.exists(audio_path):
         try:
-            tts = gTTS(text=question, lang="en")
-            tts.save(audio_path)
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)  # speech speed
+            engine.setProperty('volume', 1.0)
+            engine.save_to_file(question, audio_path)
+            engine.runAndWait()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Text-to-speech failed: {str(e)}")   
+    
     return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_filename)
-
 @app.post("/submit-answer/{session_id}/{question_index}")
 async def submit_answer(session_id: str, question_index: int, audio_file: UploadFile = File(...)):
     """Submit audio answer and get evaluation"""
