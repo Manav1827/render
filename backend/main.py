@@ -201,7 +201,7 @@ async def get_question_audio(session_id: str, question_index: int):
     # Generate audio if not exists
     if not os.path.exists(audio_path):
         try:
-            engine = pyttsx3.init()
+            engine = pyttsx3.init(driverName='sapi5')
             engine.setProperty('rate', 150)  # speech speed
             engine.setProperty('volume', 1.0)
             engine.save_to_file(question, audio_path)
