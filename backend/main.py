@@ -173,11 +173,16 @@ async def get_question_audio(session_id: str, question_index: int):
     audio_path = os.path.join(AUDIO_DIR, audio_filename)
     
     # Generate audio if not exists
-    if not os.path.exists(audio_path):
+    # if not os.path.exists(audio_path):
+    #     tts = gTTS(text=question, lang="en")
+    #     tts.save(audio_path)
+    
+    # return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_filename)
+    if not os.path.exists(audio_path) or os.path.getsize(audio_path) == 0:
+        if not question.strip():
+            question = "Question text not available."
         tts = gTTS(text=question, lang="en")
         tts.save(audio_path)
-    
-    return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_filename)
 
 @app.post("/submit-answer/{session_id}/{question_index}")
 async def submit_answer(session_id: str, question_index: int, audio_file: UploadFile = File(...)):
